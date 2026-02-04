@@ -6,8 +6,10 @@ import org.teavm.jso.JSObject;
 import org.teavm.jso.core.JSPromise;
 import org.teavm.jso.typedarrays.Uint8Array;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.Manifest;
 
 public interface Options extends JSObject {
     @JSBody(script = "return this.options ? Object.entries(this.options) : [];")
@@ -31,6 +33,14 @@ public interface Options extends JSObject {
     @JSBody(script = "return this.tokenCollector || null;")
     @Nullable
     TokenCollector tokenCollector();
+
+    @JSBody(script = "return this.outputSink || null;")
+    @Nullable
+    OutputSink outputSink();
+
+    @JSBody(script = "return this.resultSaver || null;")
+    @Nullable
+    ResultSaver resultSaver();
 
     interface Option extends JSObject {
         @JSBody(script = "return this[0];")
@@ -64,5 +74,53 @@ public interface Options extends JSObject {
 
         @JSBody(script = "this.end();")
         void end();
+    }
+
+    /**
+     * {@link org.jetbrains.java.decompiler.main.extern.IContextSource.IOutputSink}
+     */
+    interface OutputSink extends JSObject {
+        @JSBody(script = "return this.begin();")
+        JSPromise<Void> begin();
+
+        @JSBody(params = {"qualifiedName", "fileName", "content", "mapping"}, script = "return this.acceptClass(qualifiedName, fileName, content, mapping);")
+        JSPromise<Void> acceptClass(final String qualifiedName, final String fileName, final String content, final int[] mapping);
+
+        @JSBody(params = {"directory"}, script = "return this.acceptDirectory(directory);")
+        JSPromise<Void> acceptDirectory(final String directory);
+
+        @JSBody(params = {"path"}, script = "return this.acceptOther(path);")
+        JSPromise<Void> acceptOther(final String path);
+
+        JSPromise<Void> close();
+    }
+
+    /**
+     * {@link org.jetbrains.java.decompiler.main.extern.IResultSaver}
+     */
+    interface ResultSaver extends JSObject {
+//        @JSBody(params = {"path"}, script = "return this.saveFolder(path);")
+//        JSPromise<Void> saveFolder(final String path);
+//
+//        @JSBody(params = {"source", "path", "entryName"}, script = "return this.copyFile(source, path, entryName);")
+//        JSPromise<Void> copyFile(final String source, final String path, final String entryName);
+//
+//        @JSBody(params = {"path", "qualifiedName", "entryName", "content", "mapping"}, script = "return this.saveClassFile(path, qualifiedName, entryName, content, mapping);")
+//        JSPromise<Void> saveClassFile(final String path, final String qualifiedName, final String entryName, final String content, final int[] mapping);
+//
+//        @JSBody(params = {"path", "archiveName", "manifest"}, script = "return this.createArchive(path, archiveName, manifest);")
+//        JSPromise<Void> createArchive(final String path, final String archiveName, final Manifest manifest);
+//
+//        @JSBody(params = {"path", "archiveName", "entryName"}, script = "return this.saveDirEntry(path, archiveName, entryName);")
+//        JSPromise<Void> saveDirEntry(final String path, final String archiveName, final String entryName);
+//
+//        @JSBody(params = {"source", "path", "archiveName", "entry"}, script = "return this.copyEntry(source, path, archiveName, entry);")
+//        JSPromise<Void> copyEntry(final String source, final String path, final String archiveName, final String entry);
+
+        @JSBody(params = {"path", "archiveName", "qualifiedName", "entryName", "content"}, script = "return this.saveClassEntry(path, archiveName, qualifiedName, entryName, content);")
+        JSPromise<Void> saveClassEntry(final String path, final String archiveName, final String qualifiedName, final String entryName, final String content);
+
+//        @JSBody(params = {"path", "archiveName"}, script = "return this.closeArchive(path, archiveName);")
+//        JSPromise<Void> closeArchive(final String path, final String archiveName);
     }
 }
