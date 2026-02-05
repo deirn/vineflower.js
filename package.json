@@ -1,6 +1,6 @@
 {
   "name": "@run-slicer/vf",
-  "version": "0.3.3-1.11.2",
+  "version": "0.4.1-1.11.2",
   "description": "A JavaScript port of the Vineflower decompiler (https://github.com/Vineflower/vineflower).",
   "main": "vf.js",
   "types": "vf.d.ts",

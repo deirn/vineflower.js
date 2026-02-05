@@ -11,23 +11,20 @@ declare module "@run-slicer/vf" {
         end: () => void;
     }
 
-    export interface OutputSink {
-        begin: () => Promise<void>;
-        acceptClass: (qualifiedName: string, fileName: string, content: string, mapping: number[]) => Promise<void>;
-        acceptDirectory: (directory: string) => Promise<void>;
-        acceptOther: (path: string) => Promise<void>;
-        close: () => Promise<void>;
-    }
+    export type LogLevel = "trace" | "info" | "warn" | "error";
 
-    export interface ResultSaver {
-        // saveFolder: (path: string) => Promise<void>;
-        // copyFile: (source: string, path: string, entryName: string) => Promise<void>;
-        // saveClassFile: (path: string, qualifiedName: string, entryName: string, content: string, mapping: number[]) => Promise<void>;
-        // createArchive: (path: string, archiveName: string, manifest: Manifest) => Promise<void>;
-        // saveDirEntry: (path: string, archiveName: string, entryName: string) => Promise<void>;
-        // copyEntry: (source: string, path: string, archiveName: string, entry) => Promise<void>;
-        saveClassEntry: (path: string, archiveName: string, qualifiedName: string, entryName: string, content: string) => Promise<void>;
-        // closeArchive: (path: string, archiveName: string) => Promise<void>;
+    export interface Logger {
+        writeMessage: (level: LogLevel, message: string, error?: unknown) => void;
+        startProcessingClass?: (className: string) => void;
+        endProcessingClass?: () => void;
+        startReadingClass?: (className: string) => void;
+        endReadingClass?: () => void;
+        startClass?: (className: string) => void;
+        endClass?: () => void;
+        startMethod?: (methodName: string) => void;
+        endMethod?: () => void;
+        startWriteClass?: (className: string) => void;
+        endWriteClass?: () => void;
     }
 
     export interface Config {
@@ -35,14 +32,8 @@ declare module "@run-slicer/vf" {
         resources?: string[];
         options?: Options;
         tokenCollector?: TokenCollector;
+        logger?: Logger;
     }
 
-    // export interface ManyConfig extends Config {
-    //     outputSink: OutputSink;
-    //     // resultSaver: ResultSaver;
-    // }
-
-    export function decompile(name: string, config?: Config): Promise<string>;
-
-    export function decompileMany(names: string[], config: Config): Promise<Record<string, string>>;
+    export function decompile(names: string | string[], config?: Config): Promise<Record<string, string>>;
 }
